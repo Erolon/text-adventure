@@ -16,9 +16,12 @@ def handle_keys(player):
     # Movement keys
     if user_input.key == 'UP':
         newY = player.y - 1
-        if (player.x, newY) in con: #TODO FIX
+        if (player.x, newY) in con:
             if not game_map.map_list[newY][player.x].blocked:
-                player.move(0, -1)
+                if isObjectAtPoint(player.x, newY):
+                    interactWithObjectAt(player.x, newY)
+                else:
+                    player.move(0, -1)
     elif user_input.key == 'DOWN':
         newY = player.y + 1
         if (player.x, newY) in con:
@@ -35,11 +38,21 @@ def handle_keys(player):
             if not game_map.map_list[player.y][newX].blocked:
                 player.move(1, 0)
 
-    if user_input.key == 'ENTER' and user_input.alt:
-        # Alt+Enter: toggle fullscreen
-        tdl.set_fullscreen(not tdl.get_fullscreen())
-    elif user_input.key == 'ESCAPE':
+    if user_input.key == 'ESCAPE':
         return True  # Exit game
+
+def interactWithObjectAt(x, y):
+    for object in objects:
+        if str(object.x) == str(x) and str(object.y) == str(y): # Strange conversions again
+            print("It's there!")
+            # object.interact() # later add checks so monsters have different behaviour than npcs
+
+def isObjectAtPoint(x, y):
+    for object in objects:
+        if str(object.x) == str(x) and str(object.y) == str(y): # Strange conversions need to be done here
+            # print("It's there!")
+            return True
+    return False
 
 def tileForChar(char):
     if char is WALL_CHAR:
@@ -73,10 +86,8 @@ def loadMap(current_level):
             if line.startswith('#'):
                 continue
             identifier = line.partition(';')
-            print(identifier)
             if identifier[0] == "NPC":
                 # NPC;10;10;1;
-                print("was NPC")
                 xTuple = identifier[2].partition(';')
                 # xTuple = 10;10;1;
                 x = xTuple[0]
@@ -103,6 +114,9 @@ PLAYER_CHAR = '@'
 NPC_CHAR = '@'
 
 def render_all(): # Render map and UI
+
+    if isDialogueActive:
+        renderDialogue()
 
     for object in objects:
         con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason
@@ -154,10 +168,15 @@ BAR_WIDTH = screen_width - 2
 PANEL_HEIGHT = 7
 PANEL_Y = screen_height
 
+DIALOGUE_HEIGHT = 5
+
 root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
+dialoguePanel = tdl.Console(screen_width // 3 * 2, DIALOGUE_HEIGHT) # Dialogue console
+
+isDialogueActive = False
 
 while not tdl.event.is_window_closed():
 

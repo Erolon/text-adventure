@@ -13,5 +13,5 @@ class NPC(): # probably should inherit Object
         self.x += dx
         self.y += dy
         
-    # def interact():
+    # def interact(self):
         # do stuff based on the id
