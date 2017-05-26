@@ -15,20 +15,24 @@ def handle_keys(player):
     # Movement keys
     if user_input.key == 'UP':
         newY = player.y - 1
-        if not game_map.map_list[newY][player.x].blocked and (player.x, newY) in con: #TODO FIX
-            player.move(0, -1)
+        if (player.x, newY) in con: #TODO FIX
+            if not game_map.map_list[newY][player.x].blocked:
+                player.move(0, -1)
     elif user_input.key == 'DOWN':
         newY = player.y + 1
-        if not game_map.map_list[newY][player.x].blocked and (player.x, newY) in con:
-            player.move(0, 1)
+        if (player.x, newY) in con:
+            if not game_map.map_list[newY][player.x].blocked:
+                player.move(0, 1)
     elif user_input.key == 'LEFT':
         newX = player.x - 1
-        if not game_map.map_list[player.y][newX].blocked and (newX, player.y) in con:
-            player.move(-1, 0)
+        if (newX, player.y) in con:
+            if not game_map.map_list[player.y][newX].blocked:
+                player.move(-1, 0)
     elif user_input.key == 'RIGHT':
         newX = player.x + 1
-        if not game_map.map_list[player.y][newX].blocked and (newX, player.y) in con:
-            player.move(1, 0)
+        if (newX, player.y) in con:
+            if not game_map.map_list[player.y][newX].blocked:
+                player.move(1, 0)
 
     if user_input.key == 'ENTER' and user_input.alt:
         # Alt+Enter: toggle fullscreen
