@@ -39,14 +39,10 @@ def handle_keys(player):
 def tileForChar(char):
     if char is 'W':
         return Tile(char, True)
-    elif char is '#':
-        return Tile(char, False)
-    elif char is '@':
-        print("Player")
+    elif char is '#' or '@':
         return Tile(char, False)
 
-
-player = None
+player = None # Initialized in loadMap
 
 def loadMap():
     global current_level
