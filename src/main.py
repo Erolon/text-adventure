@@ -48,10 +48,13 @@ def tileForChar(char):
         return Tile(char, False)
 
 player = None # Initialized in loadMap
+objects = [] # Also init in loadMap
 
 def loadMap(current_level):
     global player
+    global objects
 
+    # Read player and map
     with open("Maps/level" + str(current_level) + ".map") as file:
         mapList =  [[tileForChar(char) for char in list(line.rstrip())] for line in file]
     height = len(mapList) # Always reference mapList [y][x]!
@@ -61,7 +64,30 @@ def loadMap(current_level):
         for x in range(width):
             if mapList[y][x].char is PLAYER_CHAR:
                 player = Player(x, y)
+                objects.append(player)
 
+    # Read objects
+    with open("Maps/level" + str(current_level) + ".dat") as file:
+        for line in file:
+            # Handle the objects
+            if line.startswith('#'):
+                continue
+            identifier = line.partition(';')
+            print(identifier)
+            if identifier[0] == "NPC":
+                # NPC;10;10;1;
+                print("was NPC")
+                xTuple = identifier[2].partition(';')
+                # xTuple = 10;10;1;
+                x = xTuple[0]
+                yTuple = xTuple[2].partition(';')
+                # yTuple = 10;1;
+                y = yTuple[0]
+                idTuple = yTuple[2].partition(';')
+                # idTuple = 1;
+                npcId = idTuple[0]
+                objects.append(NPC(x, y, npcId))
+                print(x + " " + y + " " + npcId)
 
     return Game_Map(mapList, width, height)
 
@@ -79,7 +105,7 @@ NPC_CHAR = '@'
 def render_all(): # Render map and UI
 
     for object in objects:
-        con.draw_char(object.x, object.y, object.char, object.color)
+        con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason
 
     for y in range(game_map.height):
         for x in range(game_map.width):
@@ -133,16 +159,13 @@ tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
 
-npc = NPC(10, 10, 10)
-objects = [npc, player]
-
 while not tdl.event.is_window_closed():
 
     render_all()
     tdl.flush()
 
     for object in objects:
-        con.draw_char(object.x, object.y, ' ', object.color)
+        con.draw_str(object.x, object.y, ' ', object.color)
 
     exit_game = handle_keys(player) # all keyboard input here
     if exit_game:
