@@ -15,3 +15,6 @@ class NPC(): # probably should inherit Object
         
     def interact(self):
         print("Interacting with " + self.id)
+
+        # Add coolness to this later
+        

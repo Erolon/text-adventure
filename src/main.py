@@ -124,11 +124,8 @@ NPC_CHAR = '@'
 
 def render_all(): # Render map and UI
 
-    if isDialogueActive:
-        renderDialogue()
-
     for object in objects:
-        con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason
+        con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason. Have to use draw_str
 
     for y in range(game_map.height):
         for x in range(game_map.width):
@@ -183,9 +180,9 @@ root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullsc
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
-dialoguePanel = tdl.Console(screen_width // 3 * 2, DIALOGUE_HEIGHT) # Dialogue console TODO Implement
+# dialoguePanel = tdl.Console(screen_width // 3 * 2, DIALOGUE_HEIGHT) # Dialogue console TODO Implement
 
-isDialogueActive = False #TODO Implement
+# isDialogueActive = False #TODO Implement
 
 while not tdl.event.is_window_closed():
 
