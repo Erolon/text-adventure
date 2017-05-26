@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import textwrap
 import tdl
 from gameobject import Object
 from tile import Tile
@@ -83,10 +84,11 @@ def render_all(): ## Needs to be modified later
 
     # Prepare to render the UI Panel
     panel.clear(fg=(255, 255, 255), bg=(0, 0, 0))
- 
+
     # Render the bars here
     render_bar(1, 1, BAR_WIDTH, 'HP', 10, 15, (200, 0, 0), (160, 0, 0)) # HP BAR
- 
+    render_bar(1, 3, BAR_WIDTH, 'MANA', 7, 12, (85, 140, 255), (15, 90, 200)) # HP BAR
+
     # Move panel contents to the root panel
     root.blit(panel, 0, PANEL_Y, screen_width, PANEL_HEIGHT, 0, 0)
 
@@ -113,14 +115,14 @@ game_map = loadMap(current_level)
 screen_height = game_map.height
 screen_width = game_map.width
 
-BAR_WIDTH = 20
+BAR_WIDTH = screen_width - 2
 PANEL_HEIGHT = 7
-PANEL_Y = screen_height - PANEL_HEIGHT
+PANEL_Y = screen_height
 
-root = tdl.init(screen_width, screen_height, title="Game", fullscreen=False)
+root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
-con = tdl.Console(screen_width, screen_height)
-panel = tdl.Console(screen_width, PANEL_HEIGHT)
+con = tdl.Console(screen_width, screen_height) # Map console
+panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
 
 # player = Object(screen_width // 2, screen_height // 2, '@', (255,255,255)) # // = integer division
 npc = Object(screen_width // 2 - 5, screen_height // 2, '@', (255,255,0))
