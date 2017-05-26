@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
-import textwrap
 import tdl
 from gameobject import Object
 from tile import Tile
 from game_map import Game_Map
+from player import Player
+from npc import NPC
 
 screen_width = 30
 screen_height = 50
@@ -59,7 +60,7 @@ def loadMap(current_level):
     for y in range(height):
         for x in range(width):
             if mapList[y][x].char is PLAYER_CHAR:
-                player = Object(x, y, PLAYER_CHAR, (255, 255, 255))
+                player = Player(x, y)
 
 
     return Game_Map(mapList, width, height)
@@ -75,8 +76,7 @@ GROUND_CHAR = '.'
 PLAYER_CHAR = '@'
 NPC_CHAR = '@'
 
-def render_all(): ## Needs to be modified later
-    # print(str(player.x) + " " + str(player.y))
+def render_all(): # Render map and UI
 
     for object in objects:
         con.draw_char(object.x, object.y, object.char, object.color)
@@ -95,13 +95,13 @@ def render_all(): ## Needs to be modified later
     panel.clear(fg=(255, 255, 255), bg=(0, 0, 0))
 
     # Render the bars here
-    render_bar(1, 1, BAR_WIDTH, 'HP', 10, 15, (200, 0, 0), (160, 0, 0)) # HP BAR
-    render_bar(1, 3, BAR_WIDTH, 'MANA', 7, 12, (85, 140, 255), (15, 90, 200)) # HP BAR
+    render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
+    render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # HP BAR
 
     # Move panel contents to the root panel
     root.blit(panel, 0, PANEL_Y, screen_width, PANEL_HEIGHT, 0, 0)
 
-def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color):
+def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color): # Render UI bars
     # Calculate the width of the bar
     bar_width = int(float(value) / maximum * total_width)
  
@@ -133,8 +133,7 @@ tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
 
-# player = Object(screen_width // 2, screen_height // 2, '@', (255,255,255)) # // = integer division
-npc = Object(screen_width // 2 - 5, screen_height // 2, NPC_CHAR, (255,255,0))
+npc = NPC(10, 10, 10)
 objects = [npc, player]
 
 while not tdl.event.is_window_closed():
