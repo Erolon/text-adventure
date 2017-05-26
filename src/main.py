@@ -52,14 +52,12 @@ def handle_keys(player):
 
 def interactWithObjectAt(x, y):
     for object in objects:
-        if str(object.x) == str(x) and str(object.y) == str(y): # Strange conversions again
-            # print("It's there!")
+        if object.x == x and object.y == y:
             object.interact() # later add checks so monsters have different behaviour than npcs
 
 def isObjectAtPoint(x, y):
     for object in objects:
-        if str(object.x) == str(x) and str(object.y) == str(y): # Strange conversions need to be done here
-            # print("It's there!")
+        if object.x == x and object.y == y:
             return True
     return False
 
@@ -99,15 +97,14 @@ def loadMap(current_level):
                 # NPC;10;10;1;
                 xTuple = identifier[2].partition(';')
                 # xTuple = 10;10;1;
-                x = xTuple[0]
+                x = int(xTuple[0])
                 yTuple = xTuple[2].partition(';')
                 # yTuple = 10;1;
-                y = yTuple[0]
+                y = int(yTuple[0])
                 idTuple = yTuple[2].partition(';')
                 # idTuple = 1;
                 npcId = idTuple[0]
                 objects.append(NPC(x, y, npcId))
-                print(x + " " + y + " " + npcId)
 
     return Game_Map(mapList, width, height)
 
