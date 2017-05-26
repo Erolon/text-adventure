@@ -141,7 +141,7 @@ def render_all(): # Render map and UI
     root.blit(con, 0, 0, screen_width, screen_height, 0, 0) # move the console's contents to the root console
 
     # Prepare to render the UI Panel
-    panel.clear(fg=(255, 255, 255), bg=(0, 0, 0))
+    panel.clear(fg=(255, 255, 255), bg=(45, 10, 10))
 
     # Render the bars here
     render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
