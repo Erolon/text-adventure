@@ -41,9 +41,9 @@ def handle_keys(player):
         return True  # Exit game
 
 def tileForChar(char):
-    if char is 'W':
+    if char is WALL_CHAR:
         return Tile(char, True)
-    elif char is '#' or '@':
+    elif char is GROUND_CHAR or PLAYER_CHAR:
         return Tile(char, False)
 
 player = None # Initialized in loadMap
@@ -58,8 +58,8 @@ def loadMap(current_level):
 
     for y in range(height):
         for x in range(width):
-            if mapList[y][x].char is '@':
-                player = Object(x, y, '@', (255,255,255))
+            if mapList[y][x].char is PLAYER_CHAR:
+                player = Object(x, y, PLAYER_CHAR, (255, 255, 255))
 
 
     return Game_Map(mapList, width, height)
@@ -70,6 +70,11 @@ color_light_wall = (130, 110, 50)
 color_dark_ground = (50, 50, 150)
 color_light_ground = (200, 180, 50)
 
+WALL_CHAR = '#'
+GROUND_CHAR = '.'
+PLAYER_CHAR = '@'
+NPC_CHAR = '@'
+
 def render_all(): ## Needs to be modified later
     # print(str(player.x) + " " + str(player.y))
 
@@ -79,7 +84,7 @@ def render_all(): ## Needs to be modified later
     for y in range(game_map.height):
         for x in range(game_map.width):
             char = game_map.map_list[y][x].char
-            if char is 'W':
+            if char is WALL_CHAR:
                 con.draw_char(x, y, None, fg=None, bg=color_dark_wall)
             else:
                 con.draw_char(x, y, None, fg=None, bg=color_dark_ground)
@@ -129,7 +134,7 @@ con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
 
 # player = Object(screen_width // 2, screen_height // 2, '@', (255,255,255)) # // = integer division
-npc = Object(screen_width // 2 - 5, screen_height // 2, '@', (255,255,0))
+npc = Object(screen_width // 2 - 5, screen_height // 2, NPC_CHAR, (255,255,0))
 objects = [npc, player]
 
 while not tdl.event.is_window_closed():
