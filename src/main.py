@@ -26,17 +26,26 @@ def handle_keys(player):
         newY = player.y + 1
         if (player.x, newY) in con:
             if not game_map.map_list[newY][player.x].blocked:
-                player.move(0, 1)
+                if isObjectAtPoint(player.x, newY):
+                    interactWithObjectAt(player.x, newY)
+                else:
+                    player.move(0, 1)
     elif user_input.key == 'LEFT':
         newX = player.x - 1
         if (newX, player.y) in con:
             if not game_map.map_list[player.y][newX].blocked:
-                player.move(-1, 0)
+                if isObjectAtPoint(newX, player.y):
+                    interactWithObjectAt(newX, player.y)
+                else:
+                    player.move(-1, 0)
     elif user_input.key == 'RIGHT':
         newX = player.x + 1
         if (newX, player.y) in con:
             if not game_map.map_list[player.y][newX].blocked:
-                player.move(1, 0)
+                if isObjectAtPoint(newX, player.y):
+                    interactWithObjectAt(newX, player.y)
+                else:
+                    player.move(1, 0)
 
     if user_input.key == 'ESCAPE':
         return True  # Exit game
@@ -44,8 +53,8 @@ def handle_keys(player):
 def interactWithObjectAt(x, y):
     for object in objects:
         if str(object.x) == str(x) and str(object.y) == str(y): # Strange conversions again
-            print("It's there!")
-            # object.interact() # later add checks so monsters have different behaviour than npcs
+            # print("It's there!")
+            object.interact() # later add checks so monsters have different behaviour than npcs
 
 def isObjectAtPoint(x, y):
     for object in objects:
@@ -174,9 +183,9 @@ root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullsc
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
-dialoguePanel = tdl.Console(screen_width // 3 * 2, DIALOGUE_HEIGHT) # Dialogue console
+dialoguePanel = tdl.Console(screen_width // 3 * 2, DIALOGUE_HEIGHT) # Dialogue console TODO Implement
 
-isDialogueActive = False
+isDialogueActive = False #TODO Implement
 
 while not tdl.event.is_window_closed():
 
