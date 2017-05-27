@@ -92,11 +92,13 @@ def playerAttack(player):
         if type(monster) is not Monster:
             return
         monster.attack(player.damage)
-        oneLineMessage("You attack the " + monster.name + " dealing " + str(player.damage) + " damage")
         if monster.hp <= 0:
             player.xp += monster.xp_bounty
+            msg("You kill the " + monster.name + " and gain " + str(monster.xp_bounty) + " experience")
+        else:
+            msg("You attack the " + monster.name + " dealing " + str(player.damage) + " damage")
     else:
-        oneLineMessage("Your attack is on cooldown")
+        msg("Your attack is on cooldown")
 
 def playerInteract(player):
     x = player.x
@@ -132,7 +134,8 @@ def interactWithObjectAt(x, y):
                 message(object.getMessage())
             else:
                 try:
-                    object.interact()
+                    text = object.interact()
+                    msg(text)
                 except AttributeError:
                     pass
 
@@ -303,14 +306,14 @@ def render_top_bar():
     facingItem = getItemThatPlayerFaces()
     topPanel.draw_str(x, 0, "You are facing: " + facingItem, bg=color_ui_background)
     
-    xOneLineMessage = (map_width - len(oneLineMsg)) // 2
-    topPanel.draw_str(xOneLineMessage, 1, oneLineMsg, bg=color_ui_background)
+    xmsg = (map_width - len(oneLineMsg)) // 2
+    topPanel.draw_str(xmsg, 1, oneLineMsg, fg=(255, 255, 0), bg=color_ui_background)
 
 messages = []
 dialogue_height = None
 oneLineMsg = ""
 
-def oneLineMessage(text):
+def msg(text):
     global oneLineMsg
     oneLineMsg = text
 

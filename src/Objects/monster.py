@@ -16,6 +16,8 @@ class Monster(Game_Object):
         self.xp_bounty = 5
 
         if monsterId == 1:
+            self.name = "Weakened Goblin"
+            self.char = "O"
             self.hp = 2
             self.damage = 1
             self.attack_speed = 1

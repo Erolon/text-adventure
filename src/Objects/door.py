@@ -29,7 +29,9 @@ class Door(Game_Object):
             self.char = self.char_open
             self.blocks_movement = False
             self.name = "Door (Open)"
+            return "You open the door"
         else:
             self.char = self.char_closed
             self.blocks_movement = True
             self.name = "Door (Closed)"
+            return "You close the door"
