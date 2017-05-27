@@ -3,18 +3,14 @@ from game_object import Game_Object
 class Monster(Game_Object):
 
     char = '@'
-    DEFAULT_COLOR = (255, 255, 0)
+    DEFAULT_COLOR = (255, 0, 0)
     blocks_movement = True
 
-    def __init__(self, x, y, npcId):
+    def __init__(self, x, y, monsterId):
         self.x = x
         self.y = y
-        self.id = npcId
+        self.id = monsterId
         self.color = self.DEFAULT_COLOR
-
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
-        
+       
     def interact(self):
-        print("Interacting with " + str(self.id))
+        print("Interacting with Monster with ID " + str(self.id))

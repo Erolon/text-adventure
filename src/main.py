@@ -10,6 +10,7 @@ from game_map import Game_Map
 from player import Player
 from npc import NPC
 from door import Door
+from monster import Monster
 
 screen_width = 30
 screen_height = 50
@@ -130,8 +131,8 @@ def loadMap(current_level):
                 objects.append(NPC(values[1], values[2], values[3]))
             elif values[0] == "DOOR":
                 objects.append(Door(values[1], values[2], values[3]))
-            # elif values[0] == "MONSTER":
-            #   objects.append(Monster(values[1], values[2], values[3]))
+            elif values[0] == "MONSTER":
+                objects.append(Monster(values[1], values[2], values[3]))
                 
     return Game_Map(mapList, width, height)
 
