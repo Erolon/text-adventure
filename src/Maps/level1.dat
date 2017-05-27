@@ -2,4 +2,5 @@
 # lvl1 = 80x35
 NPC;30;10;1;
 NPC;50;25;2;
-DOOR;53;13;3;
+# Doors: x, y, isOpen (0 true, 1 false)
+DOOR;53;13;1;
