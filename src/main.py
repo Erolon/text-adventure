@@ -27,6 +27,8 @@ def handle_keys(player):
     if isDialogueActive:
         if user_input.key == 'ENTER':
             isDialogueActive = False
+        elif user_input.char == 'e':
+            playerInteract(player)
         return
 
     if user_input.char == 'w':
@@ -55,19 +57,7 @@ def handle_keys(player):
                 player.move(1, 0)
 
     elif user_input.char == 'e': # INTERACT
-        x = player.x
-        y = player.y
-        if player.facing == 'right':
-            x += 1
-        elif player.facing == 'left':
-            x -= 1
-        elif player.facing == 'up':
-            y -= 1
-        elif player.facing == 'down':
-            y += 1
-        if (x, y) in con:
-            if isObjectAtPoint(x, y):
-                interactWithObjectAt(x, y)
+        playerInteract(player)
 
     elif user_input.key == 'UP': # Change the direction you're facing
         player.facing = 'up'
@@ -78,6 +68,21 @@ def handle_keys(player):
     elif user_input.key == 'DOWN':
         player.facing = 'down'
 
+def playerInteract(player):
+    x = player.x
+    y = player.y
+    if player.facing == 'right':
+        x += 1
+    elif player.facing == 'left':
+        x -= 1
+    elif player.facing == 'up':
+        y -= 1
+    elif player.facing == 'down':
+        y += 1
+    if (x, y) in con:
+        if isObjectAtPoint(x, y):
+            interactWithObjectAt(x, y)
+    
 def objectBlocksMovement(x, y):
     for object in objects:
         if object.x == x and object.y == y:
@@ -159,7 +164,6 @@ def getObjectValues(line):
     y = int(yTuple[0])
     idTuple = yTuple[2].partition(';')
     # idTuple = 1;
-    print(idTuple[0])
     objectId = int(idTuple[0])
     return (identifier, x, y, objectId)
 
