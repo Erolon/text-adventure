@@ -4,6 +4,7 @@
 #
 # NPC: x, y, id
 NPC;37;16;1;
+NPC;46;11;2;
 #
 # Doors: x, y, isOpen (0 true, 1 false)
 DOOR;53;13;1;

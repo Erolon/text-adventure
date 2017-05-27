@@ -94,9 +94,9 @@ def playerAttack(player):
         monster.attack(player.damage)
         if monster.hp <= 0:
             player.xp += monster.xp_bounty
-            msg("You kill the " + monster.name + " and gain " + str(monster.xp_bounty) + " experience")
+            msg("You kill the " + monster.name.lower() + " and gain " + str(monster.xp_bounty) + " experience")
         else:
-            msg("You attack the " + monster.name + " dealing " + str(player.damage) + " damage")
+            msg("You attack the " + monster.name.lower() + " dealing " + str(player.damage) + " damage")
     else:
         msg("Your attack is on cooldown")
 
@@ -132,6 +132,7 @@ def interactWithObjectAt(x, y):
         if object.x == x and object.y == y:
             if type(object) is NPC:
                 message(object.getMessage())
+                msg("You talk to the NPC")
             else:
                 try:
                     text = object.interact()
@@ -302,7 +303,7 @@ def render_all(): # Render map and UI
 
 def render_top_bar():
     topPanel.draw_rect(0, 0, map_width, TOP_PANEL_HEIGHT, None, bg=color_ui_background)
-    x = map_width // 2.7
+    x = (map_width - 16) // 2
     facingItem = getItemThatPlayerFaces()
     topPanel.draw_str(x, 0, "You are facing: " + facingItem, bg=color_ui_background)
     

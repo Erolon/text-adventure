@@ -16,11 +16,15 @@ class NPC(Game_Object):
         self.canFight = False
 
         if npcId == 1:
-            self.name = "Guide (NPC)"
+            self.name = "Guide"
+        if npcId == 2:
+            self.name = "Combat Tutor"
+
+        self.name += " (NPC)"
         
     def getMessage(self):
         print("Interacting with NPC with id " + str(self.id))
-        if self.id == 1: # GUIDE NPC
+        if self.id == 1: # GUIDE
 
             if self.dialogueStage == 1:
                 self.dialogueStage += 1
@@ -43,5 +47,13 @@ class NPC(Game_Object):
                         "Face with the arrow keys",
                         "",
                         "Enter to exit a dialogue"]
+
+        elif self.id == 2:
+            return ["You should know that the world is not a safe place",
+                    "The weakened goblin in the room next to me is a great learning",
+                    "opportunity for you. Kill it by pressing \"r\" while facing it",
+                    "", "Good luck!"]
+
+
         else:
             return ["default npc message"]
