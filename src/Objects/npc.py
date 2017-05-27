@@ -13,6 +13,7 @@ class NPC(Game_Object):
         self.id = npcId
         self.color = self.DEFAULT_COLOR
         self.dialogueStage = 1
+        self.canFight = False
 
         if npcId == 1:
             self.name = "Guide (NPC)"
@@ -44,4 +45,3 @@ class NPC(Game_Object):
                         "Enter to exit a dialogue"]
         else:
             return ["default npc message"]
-

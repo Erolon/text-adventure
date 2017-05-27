@@ -12,6 +12,14 @@ class Monster(Game_Object):
         self.y = y
         self.id = monsterId
         self.color = self.DEFAULT_COLOR
+        self.canFight = True
+
+        if monsterId == 1:
+            self.health = 2
+            self.damage = 1
+            self.attack_speed = 1
        
-    def attack(self):
+    def attack(self, damage):
         print("Attacking with Monster with ID " + str(self.id))
+        self.health -= damage
+        print("New health is " + str(self.health))

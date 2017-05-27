@@ -21,6 +21,7 @@ class Player(Game_Object):
         self.damage = 1
         self.can_attack = True
         self.attack_speed = 1.0 # In seconds
+        self.canFight = True
 
     def attack(self):
         self.can_attack = False

@@ -74,10 +74,23 @@ def handle_keys(player):
 
 def playerAttack(player):
     if player.can_attack:
-        player.attack()
-        print("Attacking")
+        player.attack() # For attack speed calculations
+
+        x = player.x
+        y = player.y
+        if player.facing == 'right':
+            x += 1
+        elif player.facing == 'left':
+            x -= 1
+        elif player.facing == 'up':
+            y -= 1
+        elif player.facing == 'down':
+            y += 1
+
+        attackObjectAt(x, y, player.damage)
+
     else:
-        print("Can't attack")
+        print("Can't attack right now")
 
 def playerInteract(player):
     x = player.x
@@ -93,7 +106,12 @@ def playerInteract(player):
     if (x, y) in con:
         if isObjectAtPoint(x, y):
             interactWithObjectAt(x, y)
-    
+
+def attackObjectAt(x, y, damage):
+    for object in objects:
+        if object.x == x and object.y == y:
+            object.attack(damage)
+
 def objectBlocksMovement(x, y):
     for object in objects:
         if object.x == x and object.y == y:
@@ -106,10 +124,11 @@ def interactWithObjectAt(x, y):
         if object.x == x and object.y == y:
             if type(object) is NPC:
                 message(object.getMessage())
-            elif type(object) is Monster:
-                object.attack()
             else:
-                object.interact()
+                try:
+                    object.interact()
+                except AttributeError:
+                    pass
 
 def isObjectAtPoint(x, y):
     for object in objects:

@@ -12,6 +12,7 @@ class Door(Game_Object):
         self.color = self.DEFAULT_COLOR
         self.isOpen = isOpen
         self.id = "DOOR"
+        self.canFight = False
         if isOpen == 0:
             self.char = self.char_open
             self.blocks_movement = False
