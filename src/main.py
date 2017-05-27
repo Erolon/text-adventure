@@ -72,7 +72,11 @@ def handle_keys(player):
     elif user_input.key == 'DOWN':
         player.facing = 'down'
 
+
+playerTarget = None
+
 def playerAttack(player):
+    global playerTarget
     if player.can_attack and isObjectAtPoint(player.x, player.y):
 
         player.attack() # For attack speed calculations
@@ -95,6 +99,7 @@ def playerAttack(player):
         if monster.hp <= 0:
             player.xp += monster.xp_bounty
             msg("You kill the " + monster.name.lower() + " and gain " + str(monster.xp_bounty) + " experience")
+            objects.remove(monster)
         else:
             msg("You attack the " + monster.name.lower() + " dealing " + str(player.damage) + " damage")
     else:
@@ -216,6 +221,8 @@ def getNameForMapChar(char):
         return "Unknown"
 
 def getItemThatPlayerFaces():
+    global playerTarget
+
     pX = player.x
     pY = player.y
     if player.facing == 'right':
@@ -229,8 +236,12 @@ def getItemThatPlayerFaces():
 
     for object in objects:
         if object.x == pX and object.y == pY:
+            if type(object) is Monster:
+                playerTarget = object
             return object.name
     
+    playerTarget = None
+
     for y in range(game_map.height):
         for x in range(game_map.width):
             if y == pY and x == pX:
@@ -247,6 +258,8 @@ PLAYER_CHAR = '@'
 
 def render_all(): # Render map and UI
     global messages
+    global playerTarget
+
     for y in range(game_map.height):
         for x in range(game_map.width):
             char = game_map.map_list[y][x].char
@@ -257,9 +270,6 @@ def render_all(): # Render map and UI
 
     for object in objects: # Draw objects after map so they go on top
         if type(object) is not Player:
-            if type(object) is Monster:
-                if object.hp <= 0:
-                    continue
             con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason. Have to use draw_str
 
     for object in objects: # Draw player later so it's always on top
@@ -272,8 +282,8 @@ def render_all(): # Render map and UI
     panel.clear(fg=color_white, bg=color_ui_background)
 
     # Render the bars here
-    render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
-    render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # MANA BAR
+    render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0), panel) # HP BAR
+    render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200), panel) # MANA BAR
 
     render_ui_text()
 
@@ -284,6 +294,8 @@ def render_all(): # Render map and UI
     topPanel.clear(fg=color_white, bg=color_ui_background)
 
     render_top_bar()
+    if playerTarget is not None:
+        render_bar(1, 3, BAR_WIDTH, 'ENEMY HEALTH', playerTarget.hp, playerTarget.maxHp, (200, 0, 0), (160, 0, 0), topPanel)
 
     root.blit(topPanel, 0, 0, map_width, TOP_PANEL_HEIGHT, 0, 0)
 
@@ -299,7 +311,6 @@ def render_all(): # Render map and UI
         dialogueX = (map_width - dialogue_width) / 2
         dialogueY = (map_height - dialogue_height) / 2
         root.blit(dialogue_panel, dialogueX, dialogueY, dialogue_width, dialogue_height, 0, 0)
-    tdl.flush()
 
 def render_top_bar():
     topPanel.draw_rect(0, 0, map_width, TOP_PANEL_HEIGHT, None, bg=color_ui_background)
@@ -347,21 +358,21 @@ def render_ui_text():
     xpX = faceX * 2.5
     panel.drawStr(xpX, y, "Experience: " + str(player.xp), bg=color_ui_background)
 
-def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color): # Render UI bars
+def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color, console): # Render UI bars
     # Calculate the width of the bar
     bar_width = int(float(value) / maximum * total_width)
  
     # Draw the background
-    panel.draw_rect(x, y, total_width, 1, None, bg=back_color)
+    console.draw_rect(x, y, total_width, 1, None, bg=back_color)
  
     # Draw the bar on top
     if bar_width > 0:
-        panel.draw_rect(x, y, bar_width, 1, None, bg=bar_color)
+        console.draw_rect(x, y, bar_width, 1, None, bg=bar_color)
 
     # Draw the actual values onto the bar
     text = name + ': ' + str(value) + '/' + str(maximum)
     x_centered = x + (total_width-len(text)) // 2
-    panel.draw_str(x_centered, y, text, fg=(0, 0, 0), bg=None)
+    console.draw_str(x_centered, y, text, fg=(0, 0, 0), bg=None)
 
 tdl.set_font('Assets/terminal8x8_gs_ro.png')
 
@@ -374,7 +385,7 @@ BAR_WIDTH = map_width - 2
 PANEL_HEIGHT = 7
 PANEL_Y = map_height
 
-TOP_PANEL_HEIGHT = 3
+TOP_PANEL_HEIGHT = 4
 
 isDialogueActive = False
 dialogue_width = int(round(map_width // 3 * 2.8, -1))
@@ -394,8 +405,7 @@ message(["Welcome!",
         "You can change the direction you face with the arrow keys",
         "",
         "Press enter to close this dialogue"])
-
-frameCounter = 1
+msg("Good luck!")
 
 while not tdl.event.is_window_closed():
     render_all()
@@ -407,4 +417,3 @@ while not tdl.event.is_window_closed():
     exit_game = handle_keys(player) # all keyboard input here
     if exit_game:
         break
-

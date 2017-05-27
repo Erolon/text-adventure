@@ -13,14 +13,14 @@ class Monster(Game_Object):
         self.id = monsterId
         self.color = self.DEFAULT_COLOR
         self.canFight = True
-        self.xp_bounty = 5
 
         if monsterId == 1:
             self.name = "Weakened Goblin"
             self.char = "O"
-            self.hp = 2
+            self.hp = self.maxHp = 2
             self.damage = 1
             self.attack_speed = 1
+            self.xp_bounty = 5
        
     def attack(self, damage):
         self.hp -= damage
