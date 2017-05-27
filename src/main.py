@@ -278,14 +278,22 @@ PANEL_HEIGHT = 7
 PANEL_Y = screen_height
 
 isDialogueActive = False
-dialogue_width = screen_width // 3 * 2
+dialogue_width = int(round(screen_width // 3 * 2.8, -1))
 
 root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
 
-# message(["Hello there!", "Hello"])
+message(["Welcome!",
+        "",
+        "You can move around with wasd",
+        "You can interact with objects by pressing \"e\" while facing them",
+        "",
+        "Try finding the guide near you and talking to him",
+        "You can change the direction you face with the arrow keys",
+        "",
+        "Press enter to close this dialogue"])
 
 while not tdl.event.is_window_closed():
     render_all()
