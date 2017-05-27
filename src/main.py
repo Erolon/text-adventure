@@ -16,7 +16,7 @@ from monster import Monster
 
 map_width = 30
 map_height = 50
-LIMIT_FPS = 60
+LIMIT_FPS = 0
 
 def handle_keys(player): 
     global isDialogueActive
@@ -72,17 +72,8 @@ def handle_keys(player):
     elif user_input.key == 'DOWN':
         player.facing = 'down'
 
-isStaminaUpdateRunning = False
-
-staminaUpdateCounter = 0
-
 def playerAttack(player):
-    if (player.stamina >= player.attack_stamina_cost):
-        print("Attacking! Stamina is " + str(player.stamina))
-        player.stamina = player.stamina - player.attack_stamina_cost
-        print("New stamina: " + str(player.stamina))
-        if not isStaminaUpdateRunning:
-            playerStaminaUpdater(True)
+    print("Attacking")
 
 def playerInteract(player):
     x = player.x
@@ -222,6 +213,7 @@ GROUND_CHAR = '.'
 PLAYER_CHAR = '@'
 
 def render_all(): # Render map and UI
+    print("rendering")
     global messages
     for y in range(game_map.height):
         for x in range(game_map.width):
@@ -245,6 +237,7 @@ def render_all(): # Render map and UI
     panel.clear(fg=color_white, bg=color_ui_background)
 
     # Render the bars here
+    print("Drawing player stamina with value " + str(player.stamina))
     render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
     render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # MANA BAR
     render_bar(1, 5, BAR_WIDTH, 'STAMINA', player.stamina, player.maxStamina, (40, 180, 30), (25, 140, 20)) # STAMINA BAR
@@ -273,6 +266,7 @@ def render_all(): # Render map and UI
         dialogueX = (map_width - dialogue_width) / 2
         dialogueY = (map_height - dialogue_height) / 2
         root.blit(dialogue_panel, dialogueX, dialogueY, dialogue_width, dialogue_height, 0, 0)
+    tdl.flush()
 
 def render_top_bar():
     topPanel.draw_rect(0, 0, map_width, TOP_PANEL_HEIGHT, None, bg=color_ui_background)
@@ -328,15 +322,11 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color): 
     x_centered = x + (total_width-len(text)) // 2
     panel.draw_str(x_centered, y, text, fg=(0, 0, 0), bg=None)
 
-def playerStaminaUpdater(isFirstTime):
+def playerStaminaUpdater():
     global player
     isStaminaUpdateRunning = True
-    timer = threading.Timer(1.0, playerStaminaUpdater, [False]) # Runs every second
-    timer.setDaemon(True) # This makes it end when the main thread is killed
-    timer.start()
-
-    print(isFirstTime)
-    if (player.stamina < player.maxStamina) and not isFirstTime:
+    if (player.stamina < player.maxStamina):
+        print("Doing update")
         player.stamina += player.stamina_regen
         render_all()
         tdl.flush()
