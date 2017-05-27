@@ -18,10 +18,6 @@ class Door(Game_Object):
         else:
             self.char = self.char_closed
             self.blocks_movement = True
-
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
         
     def interact(self):
         print("Interacting with " + str(self.id) + " at " + str(self.x) + ", " + str(self.y))
