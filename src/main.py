@@ -73,7 +73,8 @@ def handle_keys(player):
         player.facing = 'down'
 
 def playerAttack(player):
-    if player.can_attack:
+    if player.can_attack and isObjectAtPoint(player.x, player.y):
+
         player.attack() # For attack speed calculations
 
         x = player.x
@@ -87,10 +88,15 @@ def playerAttack(player):
         elif player.facing == 'down':
             y += 1
 
-        attackObjectAt(x, y, player.damage)
-
+        monster = getObjectAt(x, y)
+        if type(monster) is not Monster:
+            return
+        monster.attack(player.damage)
+        oneLineMessage("You attack the " + monster.name + " dealing " + str(player.damage) + " damage")
+        if monster.hp <= 0:
+            player.xp += monster.xp_bounty
     else:
-        print("Can't attack right now")
+        oneLineMessage("Your attack is on cooldown")
 
 def playerInteract(player):
     x = player.x
@@ -107,10 +113,10 @@ def playerInteract(player):
         if isObjectAtPoint(x, y):
             interactWithObjectAt(x, y)
 
-def attackObjectAt(x, y, damage):
+def getObjectAt(x, y):
     for object in objects:
         if object.x == x and object.y == y:
-            object.attack(damage)
+            return object
 
 def objectBlocksMovement(x, y):
     for object in objects:
@@ -296,9 +302,17 @@ def render_top_bar():
     x = map_width // 2.7
     facingItem = getItemThatPlayerFaces()
     topPanel.draw_str(x, 0, "You are facing: " + facingItem, bg=color_ui_background)
+    
+    xOneLineMessage = (map_width - len(oneLineMsg)) // 2
+    topPanel.draw_str(xOneLineMessage, 1, oneLineMsg, bg=color_ui_background)
 
 messages = []
 dialogue_height = None
+oneLineMsg = ""
+
+def oneLineMessage(text):
+    global oneLineMsg
+    oneLineMsg = text
 
 def message(text):
     global isDialogueActive
@@ -356,7 +370,7 @@ BAR_WIDTH = map_width - 2
 PANEL_HEIGHT = 7
 PANEL_Y = map_height
 
-TOP_PANEL_HEIGHT = 4
+TOP_PANEL_HEIGHT = 3
 
 isDialogueActive = False
 dialogue_width = int(round(map_width // 3 * 2.8, -1))

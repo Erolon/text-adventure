@@ -13,6 +13,7 @@ class Monster(Game_Object):
         self.id = monsterId
         self.color = self.DEFAULT_COLOR
         self.canFight = True
+        self.xp_bounty = 5
 
         if monsterId == 1:
             self.hp = 2
