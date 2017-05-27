@@ -14,6 +14,7 @@ class Player(): # probably should inherit Object
         self.x = x
         self.y = y
         self.color = self.DEFAULT_COLOR
+        self.facing = 'right'
 
     def move(self, dx, dy):
         self.x += dx

@@ -1,54 +1,73 @@
 #!/usr/bin/python3
 
 import tdl
+
+import sys
+sys.path.append('Objects')
+
 from gameobject import Object
 from tile import Tile
 from game_map import Game_Map
 from player import Player
 from npc import NPC
+from door import Door
 
 screen_width = 30
 screen_height = 50
-LIMIT_FPS = 30
+LIMIT_FPS = 60
 
 def handle_keys(player): 
     user_input = tdl.event.key_wait()
     # Movement keys
-    if user_input.key == 'UP':
+    if user_input.char == 'w':
         newY = player.y - 1
+        player.facing = 'up' 
         if (player.x, newY) in con:
-            if not game_map.map_list[newY][player.x].blocked:
-                if isObjectAtPoint(player.x, newY):
-                    interactWithObjectAt(player.x, newY)
-                else:
-                    player.move(0, -1)
-    elif user_input.key == 'DOWN':
+            if not game_map.map_list[newY][player.x].blocked and not isBlockingObjectAtPoint(player.x, newY):
+                player.move(0, -1)
+    elif user_input.char == 's':
         newY = player.y + 1
+        player.facing = 'down'
         if (player.x, newY) in con:
-            if not game_map.map_list[newY][player.x].blocked:
-                if isObjectAtPoint(player.x, newY):
-                    interactWithObjectAt(player.x, newY)
-                else:
-                    player.move(0, 1)
-    elif user_input.key == 'LEFT':
+            if not game_map.map_list[newY][player.x].blocked and not isBlockingObjectAtPoint(player.x, newY):
+                player.move(0, 1)
+    elif user_input.char == 'a':
         newX = player.x - 1
+        player.facing = 'left'
         if (newX, player.y) in con:
-            if not game_map.map_list[player.y][newX].blocked:
-                if isObjectAtPoint(newX, player.y):
-                    interactWithObjectAt(newX, player.y)
-                else:
-                    player.move(-1, 0)
-    elif user_input.key == 'RIGHT':
+            if not game_map.map_list[player.y][newX].blocked and not isBlockingObjectAtPoint(newX, player.y):
+                player.move(-1, 0)
+    elif user_input.char == 'd':
         newX = player.x + 1
+        player.facing = 'right'
         if (newX, player.y) in con:
-            if not game_map.map_list[player.y][newX].blocked:
-                if isObjectAtPoint(newX, player.y):
-                    interactWithObjectAt(newX, player.y)
-                else:
-                    player.move(1, 0)
+            if not game_map.map_list[player.y][newX].blocked and not isBlockingObjectAtPoint(newX, player.y):
+                player.move(1, 0)
+
+    elif user_input.char == 'e': # INTERACT
+        x = player.x
+        y = player.y
+        if player.facing == 'right':
+            x += 1
+        elif player.facing == 'left':
+            x -= 1
+        elif player.facing == 'up':
+            y -= 1
+        elif player.facing == 'down':
+            y += 1
+        if (x, y) in con:
+            if isObjectAtPoint(x, y):
+                interactWithObjectAt(x, y)
 
     if user_input.key == 'ESCAPE':
         return True  # Exit game
+
+def objectBlocksMovement(x, y):
+    for object in objects:
+        if object.x == x and object.y == y:
+            if object.blocks_movement:
+                return True
+    return False
 
 def interactWithObjectAt(x, y):
     for object in objects:
@@ -61,10 +80,16 @@ def isObjectAtPoint(x, y):
             return True
     return False
 
+def isBlockingObjectAtPoint(x, y):
+    for object in objects:
+        if object.x == x and object.y == y and object.blocks_movement == True:
+            return True
+    return False
+
 def tileForChar(char):
-    if char is WALL_CHAR:
+    if char == WALL_CHAR:
         return Tile(char, True)
-    elif char is GROUND_CHAR or PLAYER_CHAR:
+    elif char == GROUND_CHAR or char == PLAYER_CHAR:
         return Tile(char, False)
 
 player = None # Initialized in loadMap
@@ -92,45 +117,52 @@ def loadMap(current_level):
             # Handle the objects
             if line.startswith('#'):
                 continue
-            identifier = line.partition(';')
-            if identifier[0] == "NPC":
-                # NPC;10;10;1;
-                xTuple = identifier[2].partition(';')
-                # xTuple = 10;10;1;
-                x = int(xTuple[0])
-                yTuple = xTuple[2].partition(';')
-                # yTuple = 10;1;
-                y = int(yTuple[0])
-                idTuple = yTuple[2].partition(';')
-                # idTuple = 1;
-                npcId = idTuple[0]
-                objects.append(NPC(x, y, npcId))
-
+            values = getObjectValues(line)
+            if values[0] == "NPC":
+                objects.append(NPC(values[1], values[2], values[3]))
+            elif values[0] == "DOOR":
+                objects.append(Door(values[1], values[2], values[3]))
+                
     return Game_Map(mapList, width, height)
 
-color_dark_wall = (0, 0, 100)
-color_light_wall = (130, 110, 50)
+def getObjectValues(line):
+    identifierTuple = line.partition(';')
+    identifier = identifierTuple[0]
+    xTuple = identifierTuple[2].partition(';')
+    # xTuple = 10;10;1;
+    x = int(xTuple[0])
+    yTuple = xTuple[2].partition(';')
+    # yTuple = 10;1;
+    y = int(yTuple[0])
+    idTuple = yTuple[2].partition(';')
+    # idTuple = 1;
+    objectId = int(idTuple[0])
+    return (identifier, x, y, objectId)
 
-color_dark_ground = (50, 50, 150)
-color_light_ground = (200, 180, 50)
+color_wall = (128, 128, 128)
 
 WALL_CHAR = '#'
 GROUND_CHAR = '.'
 PLAYER_CHAR = '@'
 NPC_CHAR = '@'
+DOOR_CHAR = 'D'
 
 def render_all(): # Render map and UI
-
-    for object in objects:
-        con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason. Have to use draw_str
-
     for y in range(game_map.height):
         for x in range(game_map.width):
             char = game_map.map_list[y][x].char
             if char is WALL_CHAR:
-                con.draw_char(x, y, None, fg=None, bg=color_dark_wall)
-            else:
-                con.draw_char(x, y, None, fg=None, bg=color_dark_ground)
+                con.draw_char(x, y, WALL_CHAR, fg=color_wall)
+            elif char is GROUND_CHAR:
+                con.draw_char(x, y, GROUND_CHAR, fg=(255, 255, 255))
+
+    for object in objects: # Draw objects after map so they go on top
+        if type(object) is not Player:
+            con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason. Have to use draw_str
+
+    for object in objects: # Draw player later so it's always on top
+        if type(object) is Player:
+            con.draw_str(object.x, object.y, object.char, object.color)
 
     root.blit(con, 0, 0, screen_width, screen_height, 0, 0) # move the console's contents to the root console
 
@@ -187,7 +219,7 @@ while not tdl.event.is_window_closed():
     tdl.flush()
 
     for object in objects:
-        con.draw_str(object.x, object.y, ' ', object.color)
+        con.draw_str(object.x, object.y, GROUND_CHAR, object.color)
 
     exit_game = handle_keys(player) # all keyboard input here
     if exit_game:

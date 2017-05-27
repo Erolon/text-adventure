@@ -2,6 +2,7 @@ class NPC(): # probably should inherit Object
 
     char = '@'
     DEFAULT_COLOR = (255, 255, 0)
+    blocks_movement = True
 
     def __init__(self, x, y, npcId):
         self.x = x
@@ -14,7 +15,4 @@ class NPC(): # probably should inherit Object
         self.y += dy
         
     def interact(self):
-        print("Interacting with " + self.id)
-
-        # Add coolness to this later
-        
+        print("Interacting with " + str(self.id))
