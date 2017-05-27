@@ -12,5 +12,6 @@ class NPC(Game_Object):
         self.id = npcId
         self.color = self.DEFAULT_COLOR
         
-    def interact(self):
-        print("Interacting with " + str(self.id))
+    def getMessage(self):
+        return ["Hello!"]
+

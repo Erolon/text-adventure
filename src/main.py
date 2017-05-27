@@ -21,11 +21,12 @@ def handle_keys(player):
     user_input = tdl.event.key_wait()
     # Movement keys
 
+    if user_input.key == 'ESCAPE':
+        return True  # Exit game
+
     if isDialogueActive:
         if user_input.key == 'ENTER':
-            print("pressed")
             isDialogueActive = False
-            print(isDialogueActive)
         return
 
     if user_input.char == 'w':
@@ -77,9 +78,6 @@ def handle_keys(player):
     elif user_input.key == 'DOWN':
         player.facing = 'down'
 
-    if user_input.key == 'ESCAPE':
-        return True  # Exit game
-
 def objectBlocksMovement(x, y):
     for object in objects:
         if object.x == x and object.y == y:
@@ -90,7 +88,12 @@ def objectBlocksMovement(x, y):
 def interactWithObjectAt(x, y):
     for object in objects:
         if object.x == x and object.y == y:
-            object.interact() # later add checks so monsters have different behaviour than npcs
+            if type(object) is NPC:
+                message(object.getMessage())
+            elif type(object) is Monster:
+                object.interact() # object.attack() later
+            else:
+                object.interact()
 
 def isObjectAtPoint(x, y):
     for object in objects:
@@ -217,6 +220,7 @@ dialogue_height = None
 def message(text):
     global isDialogueActive
     global dialogue_height
+    messages.clear()
     dialogue_height = len(text) + 4 # 4 for margin
     # Text is a list
     for string in text:
