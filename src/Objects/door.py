@@ -15,9 +15,11 @@ class Door(Game_Object):
         if isOpen == 0:
             self.char = self.char_open
             self.blocks_movement = False
+            self.name = "Door (Open)"
         else:
             self.char = self.char_closed
             self.blocks_movement = True
+            self.name = "Door (Closed)"
         
     def interact(self):
         print("Interacting with " + str(self.id) + " at " + str(self.x) + ", " + str(self.y))
@@ -25,6 +27,8 @@ class Door(Game_Object):
         if self.blocks_movement:
             self.char = self.char_open
             self.blocks_movement = False
+            self.name = "Door (Open)"
         else:
             self.char = self.char_closed
             self.blocks_movement = True
+            self.name = "Door (Closed)"

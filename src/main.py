@@ -12,8 +12,8 @@ from npc import NPC
 from door import Door
 from monster import Monster
 
-screen_width = 30
-screen_height = 50
+map_width = 30
+map_height = 50
 LIMIT_FPS = 60
 
 def handle_keys(player): 
@@ -167,6 +167,36 @@ def getObjectValues(line):
     objectId = int(idTuple[0])
     return (identifier, x, y, objectId)
 
+def getNameForMapChar(char):
+    if char == '#':
+        return "Wall"
+    elif char == ".":
+        return "Ground"
+    else:
+        return "Unknown"
+
+def getItemThatPlayerFaces():
+    pX = player.x
+    pY = player.y
+    if player.facing == 'right':
+        pX += 1
+    elif player.facing == 'left':
+        pX -= 1
+    elif player.facing == 'up':
+        pY -= 1
+    elif player.facing == 'down':
+        pY += 1
+
+    for object in objects:
+        if object.x == pX and object.y == pY:
+            return object.name
+    
+    for y in range(game_map.height):
+        for x in range(game_map.width):
+            if y == pY and x == pX:
+                char = game_map.map_list[y][x].char
+                return getNameForMapChar(char)
+
 color_wall = (128, 128, 128)
 color_white = (255, 255, 255)
 color_ui_background = (45, 10, 10)
@@ -193,18 +223,25 @@ def render_all(): # Render map and UI
         if type(object) is Player:
             con.draw_str(object.x, object.y, object.char, object.color)
 
-    root.blit(con, 0, 0, screen_width, screen_height, 0, 0) # move the console's contents to the root console
+    root.blit(con, 0, TOP_PANEL_HEIGHT, map_width, map_height, 0, 0) # move the console's contents to the root console
 
     # Prepare to render the UI Panel
     panel.clear(fg=color_white, bg=color_ui_background)
 
     # Render the bars here
     render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
-    render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # HP BAR
+    render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # MANA BAR
     render_ui_text()
 
     # Move panel contents to the root panel
-    root.blit(panel, 0, PANEL_Y, screen_width, PANEL_HEIGHT, 0, 0)
+    root.blit(panel, 0, PANEL_Y, map_width, PANEL_HEIGHT, 0, 0)
+
+    # Render the top panel
+    topPanel.clear(fg=color_white, bg=color_ui_background)
+
+    render_top_bar()
+
+    root.blit(topPanel, 0, 0, map_width, TOP_PANEL_HEIGHT, 0, 0)
 
     if isDialogueActive:
         dialogue_panel = tdl.Console(dialogue_width, dialogue_height)
@@ -214,9 +251,15 @@ def render_all(): # Render map and UI
             dialogue_panel.draw_str(2, y, message)
             y += 1
 
-        dialogueX = (screen_width - dialogue_width) / 2
-        dialogueY = (screen_height - dialogue_height) / 2
+        dialogueX = (map_width - dialogue_width) / 2
+        dialogueY = (map_height - dialogue_height) / 2
         root.blit(dialogue_panel, dialogueX, dialogueY, dialogue_width, dialogue_height, 0, 0)
+
+def render_top_bar():
+    topPanel.draw_rect(0, 0, map_width, TOP_PANEL_HEIGHT, None, bg=color_ui_background)
+    x = map_width // 2.7
+    facingItem = getItemThatPlayerFaces()
+    topPanel.draw_str(x, 0, "You are facing: " + facingItem, bg=color_ui_background)
 
 messages = []
 dialogue_height = None
@@ -233,7 +276,7 @@ def message(text):
 
 def render_ui_text():
     y = 5
-    faceX = screen_width // 4
+    faceX = map_width // 4
     direction = "North"
     if player.facing == 'left':
         direction = "West"
@@ -270,20 +313,23 @@ tdl.set_font('Assets/terminal8x8_gs_ro.png')
 
 current_level = 1 # change later
 game_map = loadMap(current_level)
-screen_height = game_map.height
-screen_width = game_map.width
+map_height = game_map.height
+map_width = game_map.width
 
-BAR_WIDTH = screen_width - 2
+BAR_WIDTH = map_width - 2
 PANEL_HEIGHT = 7
-PANEL_Y = screen_height
+PANEL_Y = map_height
+
+TOP_PANEL_HEIGHT = 3
 
 isDialogueActive = False
-dialogue_width = int(round(screen_width // 3 * 2.8, -1))
+dialogue_width = int(round(map_width // 3 * 2.8, -1))
 
-root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
+root = tdl.init(map_width, map_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
-con = tdl.Console(screen_width, screen_height) # Map console
-panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
+con = tdl.Console(map_width, map_height) # Map console
+panel = tdl.Console(map_width, PANEL_HEIGHT) # UI console
+topPanel = tdl.Console(map_width, TOP_PANEL_HEIGHT)
 
 message(["Welcome!",
         "",

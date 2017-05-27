@@ -7,6 +7,7 @@ class Monster(Game_Object):
     blocks_movement = True
 
     def __init__(self, x, y, monsterId):
+        self.name = "Monster"
         self.x = x
         self.y = y
         self.id = monsterId

@@ -8,6 +8,8 @@ NPC;37;16;1;
 # Doors: x, y, isOpen (0 true, 1 false)
 DOOR;53;13;1;
 DOOR;54;13;1;
+DOOR;43;10;1;
+DOOR;44;10;1;
 #
 # Monster: x, y, id. Monster type is determined by the ID
-# MONSTER;35;10;1;
+MONSTER;39;9;1;

@@ -7,11 +7,15 @@ class NPC(Game_Object):
     blocks_movement = True
 
     def __init__(self, x, y, npcId):
+        self.name = "NPC"
         self.x = x
         self.y = y
         self.id = npcId
         self.color = self.DEFAULT_COLOR
         self.dialogueStage = 1
+
+        if npcId == 1:
+            self.name = "Guide (NPC)"
         
     def getMessage(self):
         print("Interacting with NPC with id " + str(self.id))
