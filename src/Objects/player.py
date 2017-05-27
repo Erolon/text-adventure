@@ -1,4 +1,7 @@
-class Player(): # probably should inherit Object
+import threading
+from game_object import Game_Object
+
+class Player(Game_Object):
 
     char = '@'
     DEFAULT_COLOR = (255, 255, 255)
@@ -16,7 +19,14 @@ class Player(): # probably should inherit Object
         self.color = self.DEFAULT_COLOR
         self.facing = 'right'
         self.damage = 1
+        self.can_attack = True
+        self.attack_speed = 1.0 # In seconds
 
-    def move(self, dx, dy):
-        self.x += dx
-        self.y += dy
+    def attack(self):
+        self.can_attack = False
+        timer = threading.Timer(self.attack_speed, self.canAttackAgain)
+        timer.setDaemon(True)
+        timer.start()
+
+    def canAttackAgain(self):
+        self.can_attack = True

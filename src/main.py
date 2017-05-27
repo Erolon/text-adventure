@@ -73,7 +73,11 @@ def handle_keys(player):
         player.facing = 'down'
 
 def playerAttack(player):
-    print("Attacking")
+    if player.can_attack:
+        player.attack()
+        print("Attacking")
+    else:
+        print("Can't attack")
 
 def playerInteract(player):
     x = player.x
@@ -213,7 +217,6 @@ GROUND_CHAR = '.'
 PLAYER_CHAR = '@'
 
 def render_all(): # Render map and UI
-    print("rendering")
     global messages
     for y in range(game_map.height):
         for x in range(game_map.width):
@@ -237,10 +240,8 @@ def render_all(): # Render map and UI
     panel.clear(fg=color_white, bg=color_ui_background)
 
     # Render the bars here
-    print("Drawing player stamina with value " + str(player.stamina))
     render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
     render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # MANA BAR
-    render_bar(1, 5, BAR_WIDTH, 'STAMINA', player.stamina, player.maxStamina, (40, 180, 30), (25, 140, 20)) # STAMINA BAR
 
     render_ui_text()
 
@@ -288,7 +289,7 @@ def message(text):
     isDialogueActive = True
 
 def render_ui_text():
-    y = 7
+    y = 5
     faceX = map_width // 4
     direction = "North"
     if player.facing == 'left':
@@ -322,18 +323,6 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color): 
     x_centered = x + (total_width-len(text)) // 2
     panel.draw_str(x_centered, y, text, fg=(0, 0, 0), bg=None)
 
-def playerStaminaUpdater():
-    global player
-    isStaminaUpdateRunning = True
-    if (player.stamina < player.maxStamina):
-        print("Doing update")
-        player.stamina += player.stamina_regen
-        render_all()
-        tdl.flush()
-    elif player.stamina == player.maxStamina:
-        timer.cancel()
-        isStaminaUpdateRunning = False
-
 tdl.set_font('Assets/terminal8x8_gs_ro.png')
 
 current_level = 1 # change later
@@ -342,7 +331,7 @@ map_height = game_map.height
 map_width = game_map.width
 
 BAR_WIDTH = map_width - 2
-PANEL_HEIGHT = 9
+PANEL_HEIGHT = 7
 PANEL_Y = map_height
 
 TOP_PANEL_HEIGHT = 4
