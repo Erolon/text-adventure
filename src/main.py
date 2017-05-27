@@ -234,6 +234,9 @@ def getItemThatPlayerFaces():
     elif player.facing == 'down':
         pY += 1
 
+    if (pX, pY) not in con:
+        return "Nothing"
+
     for object in objects:
         if object.x == pX and object.y == pY:
             if type(object) is Monster:
@@ -381,16 +384,16 @@ game_map = loadMap(current_level)
 map_height = game_map.height
 map_width = game_map.width
 
+TOP_PANEL_HEIGHT = 4
+
 BAR_WIDTH = map_width - 2
 PANEL_HEIGHT = 7
-PANEL_Y = map_height
-
-TOP_PANEL_HEIGHT = 4
+PANEL_Y = map_height + TOP_PANEL_HEIGHT
 
 isDialogueActive = False
 dialogue_width = int(round(map_width // 3 * 2.8, -1))
 
-root = tdl.init(map_width, map_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
+root = tdl.init(map_width, map_height + PANEL_HEIGHT + TOP_PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(map_width, map_height) # Map console
 panel = tdl.Console(map_width, PANEL_HEIGHT) # UI console
