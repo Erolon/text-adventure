@@ -17,8 +17,17 @@ screen_height = 50
 LIMIT_FPS = 60
 
 def handle_keys(player): 
+    global isDialogueActive
     user_input = tdl.event.key_wait()
     # Movement keys
+
+    if isDialogueActive:
+        if user_input.key == 'ENTER':
+            print("pressed")
+            isDialogueActive = False
+            print(isDialogueActive)
+        return
+
     if user_input.char == 'w':
         newY = player.y - 1
         player.facing = 'up' 
@@ -153,12 +162,14 @@ def getObjectValues(line):
 
 color_wall = (128, 128, 128)
 color_white = (255, 255, 255)
+color_ui_background = (45, 10, 10)
 
 WALL_CHAR = '#'
 GROUND_CHAR = '.'
 PLAYER_CHAR = '@'
 
 def render_all(): # Render map and UI
+    global messages
     for y in range(game_map.height):
         for x in range(game_map.width):
             char = game_map.map_list[y][x].char
@@ -178,7 +189,7 @@ def render_all(): # Render map and UI
     root.blit(con, 0, 0, screen_width, screen_height, 0, 0) # move the console's contents to the root console
 
     # Prepare to render the UI Panel
-    panel.clear(fg=color_white, bg=(45, 10, 10))
+    panel.clear(fg=color_white, bg=color_ui_background)
 
     # Render the bars here
     render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
@@ -187,6 +198,30 @@ def render_all(): # Render map and UI
 
     # Move panel contents to the root panel
     root.blit(panel, 0, PANEL_Y, screen_width, PANEL_HEIGHT, 0, 0)
+
+    if isDialogueActive:
+        dialogue_panel = tdl.Console(dialogue_width, dialogue_height)
+        
+        y = 2
+        for message in messages:
+            dialogue_panel.draw_str(2, y, message)
+            y += 1
+
+        dialogueX = (screen_width - dialogue_width) / 2
+        dialogueY = (screen_height - dialogue_height) / 2
+        root.blit(dialogue_panel, dialogueX, dialogueY, dialogue_width, dialogue_height, 0, 0)
+
+messages = []
+dialogue_height = None
+
+def message(text):
+    global isDialogueActive
+    global dialogue_height
+    dialogue_height = len(text) + 4 # 4 for margin
+    # Text is a list
+    for string in text:
+        messages.append(string)
+    isDialogueActive = True
 
 def render_ui_text():
     y = 5
@@ -199,13 +234,13 @@ def render_ui_text():
     elif player.facing == 'down':
         direction = "South"
 
-    panel.draw_str(faceX, y, "Facing: " + direction)
+    panel.draw_str(faceX, y, "Facing: " + direction, bg=color_ui_background)
 
     levelX = faceX * 1.85
-    panel.draw_str(levelX, y, "Level: " + str(player.level))
+    panel.draw_str(levelX, y, "Level: " + str(player.level), bg=color_ui_background)
 
     xpX = faceX * 2.5
-    panel.drawStr(xpX, y, "Experience: " + str(player.xp))
+    panel.drawStr(xpX, y, "Experience: " + str(player.xp), bg=color_ui_background)
 
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color): # Render UI bars
     # Calculate the width of the bar
@@ -234,10 +269,15 @@ BAR_WIDTH = screen_width - 2
 PANEL_HEIGHT = 7
 PANEL_Y = screen_height
 
+isDialogueActive = False
+dialogue_width = screen_width // 3 * 2
+
 root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
+
+# message(["Hello there!", "Hello"])
 
 while not tdl.event.is_window_closed():
     render_all()
