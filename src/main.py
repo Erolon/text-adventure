@@ -59,6 +59,15 @@ def handle_keys(player):
             if isObjectAtPoint(x, y):
                 interactWithObjectAt(x, y)
 
+    elif user_input.key == 'UP': # Change the direction you're facing
+        player.facing = 'up'
+    elif user_input.key == 'LEFT':
+        player.facing = 'left'
+    elif user_input.key == 'RIGHT':
+        player.facing = 'right'
+    elif user_input.key == 'DOWN':
+        player.facing = 'down'
+
     if user_input.key == 'ESCAPE':
         return True  # Exit game
 
@@ -140,6 +149,7 @@ def getObjectValues(line):
     return (identifier, x, y, objectId)
 
 color_wall = (128, 128, 128)
+color_white = (255, 255, 255)
 
 WALL_CHAR = '#'
 GROUND_CHAR = '.'
@@ -154,7 +164,7 @@ def render_all(): # Render map and UI
             if char is WALL_CHAR:
                 con.draw_char(x, y, WALL_CHAR, fg=color_wall)
             elif char is GROUND_CHAR:
-                con.draw_char(x, y, GROUND_CHAR, fg=(255, 255, 255))
+                con.draw_char(x, y, GROUND_CHAR, fg=color_white)
 
     for object in objects: # Draw objects after map so they go on top
         if type(object) is not Player:
@@ -167,14 +177,34 @@ def render_all(): # Render map and UI
     root.blit(con, 0, 0, screen_width, screen_height, 0, 0) # move the console's contents to the root console
 
     # Prepare to render the UI Panel
-    panel.clear(fg=(255, 255, 255), bg=(45, 10, 10))
+    panel.clear(fg=color_white, bg=(45, 10, 10))
 
     # Render the bars here
     render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
     render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # HP BAR
+    render_ui_text()
 
     # Move panel contents to the root panel
     root.blit(panel, 0, PANEL_Y, screen_width, PANEL_HEIGHT, 0, 0)
+
+def render_ui_text():
+    y = 5
+    faceX = screen_width // 4
+    direction = "North"
+    if player.facing == 'left':
+        direction = "West"
+    elif player.facing == 'right':
+        direction = "East"
+    elif player.facing == 'down':
+        direction = "South"
+
+    panel.draw_str(faceX, y, "Facing: " + direction)
+
+    levelX = faceX * 1.85
+    panel.draw_str(levelX, y, "Level: " + str(player.level))
+
+    xpX = faceX * 2.5
+    panel.drawStr(xpX, y, "Experience: " + str(player.xp))
 
 def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color): # Render UI bars
     # Calculate the width of the bar
@@ -203,18 +233,14 @@ BAR_WIDTH = screen_width - 2
 PANEL_HEIGHT = 7
 PANEL_Y = screen_height
 
-DIALOGUE_HEIGHT = 5
+gameIsRunning = True
 
 root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
 panel = tdl.Console(screen_width, PANEL_HEIGHT) # UI console
-# dialoguePanel = tdl.Console(screen_width // 3 * 2, DIALOGUE_HEIGHT) # Dialogue console TODO Implement
-
-# isDialogueActive = False #TODO Implement
 
 while not tdl.event.is_window_closed():
-
     render_all()
     tdl.flush()
 
