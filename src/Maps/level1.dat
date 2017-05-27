@@ -1,6 +1,9 @@
 # X, Y, ID
 # lvl1 = 80x35
+# NPC: x, y, id
 NPC;30;10;1;
 NPC;50;25;2;
 # Doors: x, y, isOpen (0 true, 1 false)
 DOOR;53;13;1;
+# Monster: x, y, id. Monster type is determined by the ID
+MONSTER;35;10;1;

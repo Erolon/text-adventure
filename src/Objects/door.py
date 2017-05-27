@@ -1,4 +1,6 @@
-class Door(): # probably should inherit Object
+from game_object import Game_Object
+
+class Door(Game_Object):
 
     char_closed = 'D'
     char_open = 'd'

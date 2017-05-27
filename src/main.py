@@ -5,7 +5,6 @@ import tdl
 import sys
 sys.path.append('Objects')
 
-from gameobject import Object
 from tile import Tile
 from game_map import Game_Map
 from player import Player
@@ -131,6 +130,8 @@ def loadMap(current_level):
                 objects.append(NPC(values[1], values[2], values[3]))
             elif values[0] == "DOOR":
                 objects.append(Door(values[1], values[2], values[3]))
+            # elif values[0] == "MONSTER":
+            #   objects.append(Monster(values[1], values[2], values[3]))
                 
     return Game_Map(mapList, width, height)
 
@@ -145,6 +146,7 @@ def getObjectValues(line):
     y = int(yTuple[0])
     idTuple = yTuple[2].partition(';')
     # idTuple = 1;
+    print(idTuple[0])
     objectId = int(idTuple[0])
     return (identifier, x, y, objectId)
 
@@ -154,8 +156,6 @@ color_white = (255, 255, 255)
 WALL_CHAR = '#'
 GROUND_CHAR = '.'
 PLAYER_CHAR = '@'
-NPC_CHAR = '@'
-DOOR_CHAR = 'D'
 
 def render_all(): # Render map and UI
     for y in range(game_map.height):
@@ -233,8 +233,6 @@ BAR_WIDTH = screen_width - 2
 PANEL_HEIGHT = 7
 PANEL_Y = screen_height
 
-gameIsRunning = True
-
 root = tdl.init(screen_width, screen_height + PANEL_HEIGHT, title="Game", fullscreen=False) # Height = map + ui
 tdl.setFPS(LIMIT_FPS)
 con = tdl.Console(screen_width, screen_height) # Map console
@@ -244,7 +242,7 @@ while not tdl.event.is_window_closed():
     render_all()
     tdl.flush()
 
-    for object in objects:
+    for object in objects: # Clear all objects before they get redrawn
         con.draw_str(object.x, object.y, GROUND_CHAR, object.color)
 
     exit_game = handle_keys(player) # all keyboard input here
