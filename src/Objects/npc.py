@@ -13,5 +13,8 @@ class NPC(Game_Object):
         self.color = self.DEFAULT_COLOR
         
     def getMessage(self):
-        return ["Hello!"]
+        if self.id == 1:
+            return ["Hello!"]
+        else:
+            return ["default npc message"]
 
