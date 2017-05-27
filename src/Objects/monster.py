@@ -13,5 +13,5 @@ class Monster(Game_Object):
         self.id = monsterId
         self.color = self.DEFAULT_COLOR
        
-    def interact(self):
-        print("Interacting with Monster with ID " + str(self.id))
+    def attack(self):
+        print("Attacking with Monster with ID " + str(self.id))

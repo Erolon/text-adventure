@@ -5,6 +5,8 @@ import tdl
 import sys
 sys.path.append('Objects')
 
+import threading
+
 from tile import Tile
 from game_map import Game_Map
 from player import Player
@@ -58,6 +60,8 @@ def handle_keys(player):
 
     elif user_input.char == 'e': # INTERACT
         playerInteract(player)
+    elif user_input.char == 'r': # ATTACK
+        playerAttack(player)
 
     elif user_input.key == 'UP': # Change the direction you're facing
         player.facing = 'up'
@@ -67,6 +71,18 @@ def handle_keys(player):
         player.facing = 'right'
     elif user_input.key == 'DOWN':
         player.facing = 'down'
+
+isStaminaUpdateRunning = False
+
+staminaUpdateCounter = 0
+
+def playerAttack(player):
+    if (player.stamina >= player.attack_stamina_cost):
+        print("Attacking! Stamina is " + str(player.stamina))
+        player.stamina = player.stamina - player.attack_stamina_cost
+        print("New stamina: " + str(player.stamina))
+        if not isStaminaUpdateRunning:
+            playerStaminaUpdater(True)
 
 def playerInteract(player):
     x = player.x
@@ -96,7 +112,7 @@ def interactWithObjectAt(x, y):
             if type(object) is NPC:
                 message(object.getMessage())
             elif type(object) is Monster:
-                object.interact() # object.attack() later
+                object.attack()
             else:
                 object.interact()
 
@@ -231,6 +247,8 @@ def render_all(): # Render map and UI
     # Render the bars here
     render_bar(1, 1, BAR_WIDTH, 'HP', player.hp, player.maxHp, (200, 0, 0), (160, 0, 0)) # HP BAR
     render_bar(1, 3, BAR_WIDTH, 'MANA', player.mana, player.maxMana, (85, 140, 255), (15, 90, 200)) # MANA BAR
+    render_bar(1, 5, BAR_WIDTH, 'STAMINA', player.stamina, player.maxStamina, (40, 180, 30), (25, 140, 20)) # STAMINA BAR
+
     render_ui_text()
 
     # Move panel contents to the root panel
@@ -243,9 +261,10 @@ def render_all(): # Render map and UI
 
     root.blit(topPanel, 0, 0, map_width, TOP_PANEL_HEIGHT, 0, 0)
 
+    # Render dialogue if it's active
     if isDialogueActive:
         dialogue_panel = tdl.Console(dialogue_width, dialogue_height)
-        
+
         y = 2
         for message in messages:
             dialogue_panel.draw_str(2, y, message)
@@ -275,7 +294,7 @@ def message(text):
     isDialogueActive = True
 
 def render_ui_text():
-    y = 5
+    y = 7
     faceX = map_width // 4
     direction = "North"
     if player.facing == 'left':
@@ -309,6 +328,22 @@ def render_bar(x, y, total_width, name, value, maximum, bar_color, back_color): 
     x_centered = x + (total_width-len(text)) // 2
     panel.draw_str(x_centered, y, text, fg=(0, 0, 0), bg=None)
 
+def playerStaminaUpdater(isFirstTime):
+    global player
+    isStaminaUpdateRunning = True
+    timer = threading.Timer(1.0, playerStaminaUpdater, [False]) # Runs every second
+    timer.setDaemon(True) # This makes it end when the main thread is killed
+    timer.start()
+
+    print(isFirstTime)
+    if (player.stamina < player.maxStamina) and not isFirstTime:
+        player.stamina += player.stamina_regen
+        render_all()
+        tdl.flush()
+    elif player.stamina == player.maxStamina:
+        timer.cancel()
+        isStaminaUpdateRunning = False
+
 tdl.set_font('Assets/terminal8x8_gs_ro.png')
 
 current_level = 1 # change later
@@ -317,10 +352,10 @@ map_height = game_map.height
 map_width = game_map.width
 
 BAR_WIDTH = map_width - 2
-PANEL_HEIGHT = 7
+PANEL_HEIGHT = 9
 PANEL_Y = map_height
 
-TOP_PANEL_HEIGHT = 3
+TOP_PANEL_HEIGHT = 4
 
 isDialogueActive = False
 dialogue_width = int(round(map_width // 3 * 2.8, -1))
@@ -341,6 +376,8 @@ message(["Welcome!",
         "",
         "Press enter to close this dialogue"])
 
+frameCounter = 1
+
 while not tdl.event.is_window_closed():
     render_all()
     tdl.flush()
@@ -351,3 +388,4 @@ while not tdl.event.is_window_closed():
     exit_game = handle_keys(player) # all keyboard input here
     if exit_game:
         break
+
