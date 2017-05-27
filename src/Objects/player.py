@@ -20,7 +20,7 @@ class Player(Game_Object):
         self.facing = 'right'
         self.damage = 1
         self.can_attack = True
-        self.attack_speed = 1.0 # In seconds
+        self.attack_speed = 1.5 # In seconds
         self.canFight = True
 
     def attack(self):

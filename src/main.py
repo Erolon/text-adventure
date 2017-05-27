@@ -247,6 +247,9 @@ def render_all(): # Render map and UI
 
     for object in objects: # Draw objects after map so they go on top
         if type(object) is not Player:
+            if type(object) is Monster:
+                if object.hp <= 0:
+                    continue
             con.draw_str(object.x, object.y, object.char, object.color) # Draw char doesn't work for some reason. Have to use draw_str
 
     for object in objects: # Draw player later so it's always on top

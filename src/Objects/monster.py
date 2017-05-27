@@ -15,11 +15,9 @@ class Monster(Game_Object):
         self.canFight = True
 
         if monsterId == 1:
-            self.health = 2
+            self.hp = 2
             self.damage = 1
             self.attack_speed = 1
        
     def attack(self, damage):
-        print("Attacking with Monster with ID " + str(self.id))
-        self.health -= damage
-        print("New health is " + str(self.health))
+        self.hp -= damage
