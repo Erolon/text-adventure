@@ -48,12 +48,11 @@ class NPC(Game_Object):
                         "",
                         "Enter to exit a dialogue"]
 
-        elif self.id == 2:
+        elif self.id == 2: # COMBAT GUIDE
             return ["You should know that the world is not a safe place",
                     "The weakened goblin in the room next to me is a great learning",
                     "opportunity for you. Kill it by pressing \"r\" while facing it",
                     "", "Good luck!"]
-
 
         else:
             return ["default npc message"]
